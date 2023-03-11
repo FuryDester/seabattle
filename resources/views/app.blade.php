@@ -9,7 +9,7 @@
 
     <title>{{ env('APP_NAME') }}</title>
 
-    @vite(['resources/css/app.css', 'resources/js/app.ts'])
+    @vite(['resources/sass/app.sass', 'resources/js/app.ts'])
 </head>
 
 <body>

@@ -3,11 +3,12 @@ import axios from 'axios';
 import _ from 'lodash';
 
 Object.assign(window, {
-    axios: axios,
-    _: _,
+  axios: axios,
+  _: _,
 });
 
-window['axios'].defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+// @ts-nocheck
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
