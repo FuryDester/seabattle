@@ -1,0 +1,50 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "airbnb-typescript/base",
+        "plugin:vue/vue3-recommended"
+    ],
+    "parser": "vue-eslint-parser",
+    "parserOptions": {
+        "parser": "@typescript-eslint/parser",
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        "project": "./tsconfig.json",
+        "extraFileExtensions": [".vue"]
+    },
+    "plugins": [
+        "vue",
+        "import",
+        "@typescript-eslint"
+    ],
+    "settings": {
+        "import/extensions": {
+            "node": {
+                "extensions": [".ts"]
+            }
+        },
+        "import/parsers": {
+            "@typescript-eslint/parser": [".ts"]
+        },
+        "import/resolver": {
+            "typescript": {
+                "alwaysTryTypes": true,
+                "project": "./tsconfig.json"
+            }
+        }
+    },
+    "rules": {
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+        "vue/multi-word-component-names": "off",
+        "max-len": ["error", 150],
+        "no-console": "off",
+        "import/extensions": ["error", "ignorePackages", {
+            "ts": "never"
+        }],
+        "import/no-unresolved": "error"
+    }
+}

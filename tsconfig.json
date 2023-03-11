@@ -1,0 +1,19 @@
+{
+    "extends": "@vue/tsconfig/tsconfig.web.json",
+    "compilerOptions": {
+        "lib": ["ES2021", "DOM", "DOM.Iterable"],
+        "baseUrl": "resources/js",
+        "paths": {
+            "@/*": ["./*"],
+        },
+    },
+    "include": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.vue",
+    ],
+    "exclude": [
+        "node_modules",
+        "vendor",
+    ],
+}
