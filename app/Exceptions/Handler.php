@@ -3,6 +3,9 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -41,8 +44,36 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(static function (BaseApiException $exception) {
+            return response()->json([
+                'success' => false,
+                'error' => [
+                    'code' => $exception->getCode() ?: $exception->getDefaultErrorCode(),
+                    'slug' => $exception->getErrorSlug(),
+                    'description' => $exception->getMessage() ?: $exception->getDefaultErrorDescription(),
+                ],
+            ], $exception->getErrorHttpCode() ?: 500);
+        });
+
+        $this->renderable(static function (MethodNotAllowedHttpException $exception, Request $request) {
+            if ($request->is('api/*')) {
+                throw new WrongHttpMethodException();
+            }
+        });
+
+        $this->renderable(static function (Throwable $exception, Request $request) {
+            if ($request->is('api/*')) {
+                Log::error("Unhandled API exception: {$exception->getMessage()}\n{$exception->getTraceAsString()}");
+
+                return response()->json([
+                    'success' => false,
+                    'error' => [
+                        'code' => $exception->getCode(),
+                        'slug' => 'unhandled_other',
+                        'description' => 'Произошла ошибка при выполнении запроса. Попробуйте позже.'
+                    ],
+                ], 500);
+            }
         });
     }
 }

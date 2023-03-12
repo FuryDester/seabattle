@@ -1,33 +1,39 @@
-// @ts-nocheck
+import type { InternalAxiosRequestConfig } from 'axios';
 import axios from 'axios';
-import _ from 'lodash';
+import { getCookie } from 'typescript-cookie';
 
-Object.assign(window, {
-  axios: axios,
-  _: _,
+export const axiosInstance = axios.create({
+  withCredentials: true,
+  baseURL: '/api',
 });
+axiosInstance.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-// @ts-nocheck
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+const setCSRFToken = () => {
+  return axiosInstance.get('/csrf-cookie');
+};
 
-/**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allows your team to easily build robust real-time web applications.
- */
+const token: HTMLMetaElement | null = document.head.querySelector('meta[name="csrf-token"]');
+if (token) {
+  axiosInstance.defaults.headers.common[axiosInstance.defaults.xsrfHeaderName!] = token.content;
+} else {
+  await setCSRFToken();
+}
 
-// import Echo from 'laravel-echo';
+const onRequest = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig<any> | Promise<InternalAxiosRequestConfig<any>> => {
+  if (!config) {
+    return config;
+  }
 
-// import Pusher from 'pusher-js';
-// window.Pusher = Pusher;
+  const { method } = config;
+  if (
+    ['post', 'update', 'put', 'delete', 'get'].includes(method!.toLowerCase())
+    && !axiosInstance.defaults.headers.common[axiosInstance.defaults.xsrfHeaderName!]
+    && !getCookie(axiosInstance.defaults.xsrfCookieName!)
+  ) {
+    return setCSRFToken().then(() => config);
+  }
 
-// window.Echo = new Echo({
-//     broadcaster: 'pusher',
-//     key: import.meta.env.VITE_PUSHER_APP_KEY,
-//     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'mt1',
-//     wsHost: import.meta.env.VITE_PUSHER_HOST ? import.meta.env.VITE_PUSHER_HOST : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
-//     wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
-//     wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
-//     forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
-//     enabledTransports: ['ws', 'wss'],
-// });
+  return config;
+};
+
+axiosInstance.interceptors.request.use(onRequest, (error) => console.log(error));

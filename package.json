@@ -23,8 +23,9 @@
     "dependencies": {
         "@vitejs/plugin-vue": "^4.0.0",
         "lodash": "^4.17.21",
-        "ohmyfetch": "^0.4.21",
         "pinia": "^2.0.33",
+        "pinia-plugin-persistedstate": "^3.1.0",
+        "typescript-cookie": "^1.0.4",
         "vue": "^3.2.36",
         "vue-loader": "^17.0.1",
         "vue-router": "^4.1.6"
