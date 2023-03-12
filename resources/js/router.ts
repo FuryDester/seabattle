@@ -1,18 +1,30 @@
-import { createRouter, createWebHistory } from 'vue-router';
 import type { RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
 import IndexPage from '@/pages/index.vue';
 import NotFoundPage from '@/pages/404.vue';
+import AuthLoginPage from '@/pages/auth/index.vue';
+import { RouteList } from '@/enums';
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'index',
+    name: RouteList.Index,
     component: IndexPage,
   },
   {
+    path: '/auth',
+    children: [
+      {
+        path: '',
+        name: RouteList.AuthLogin,
+        component: AuthLoginPage,
+      },
+    ],
+  },
+  {
     path: '/:pathMatch(.*)*',
-    name: 'not-found',
+    name: RouteList.NotFound,
     component: NotFoundPage,
   },
 ];

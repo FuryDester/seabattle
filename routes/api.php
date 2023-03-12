@@ -1,19 +1,15 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Exceptions\InvalidRouteException;
+use App\Http\Controllers\AuthController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+Route::fallback(static function () {
+    throw new InvalidRouteException();
+});
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('auth')->group(static function () {
+    Route::post('/', [AuthController::class, 'login'])->name('login');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/get-user-info', [AuthController::class, 'getUserInfo'])->name('auth.get-user-info');
 });
